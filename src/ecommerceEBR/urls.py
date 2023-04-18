@@ -18,6 +18,8 @@ from django.conf.urls.static import static
 
 from django.contrib import admin
 from django.urls import path
+
+from boats.views import BoatListView, boat_list_view, BoatDetailView, Boat_detail_view
 from . import views
 
 urlpatterns = [
@@ -26,6 +28,10 @@ urlpatterns = [
     path('contact/', views.contact_page),
     path('login/', views.login_page),
     path('register/', views.register_page),
+    path('boats/', BoatListView.as_view()),
+    path('boats-fbv/', boat_list_view),
+    path('boats/<int:pk>/', BoatDetailView.as_view()),
+    path('boats-fbv/<int:pk>/', Boat_detail_view),
     path('admin/', admin.site.urls),
 ]
 
