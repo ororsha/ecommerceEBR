@@ -36,6 +36,14 @@ def upload_image_path(instance, filename):
             )
 
 
+class BoattManager(models.Manager):
+    def get_by_id(self, id):
+        qs = self.get_queryset().filter(id=id) # Product.objects == self.get_queryset()
+        if qs.count() == 1:
+            return qs.first()
+        return None
+
+
 class Boat(models.Model):
     title = models.CharField(max_length=100)
     price_per_hour = models.DecimalField(decimal_places=2, max_digits=20, default=100.00)
@@ -54,7 +62,12 @@ class Boat(models.Model):
     image_3 = models.ImageField(upload_to=upload_image_path, blank=True, null=True)
     image_4 = models.ImageField(upload_to=upload_image_path, blank=True, null=True)
 
+    objects = BoattManager()
+
     def __str__(self):
+        return self.title
+
+    def __unicode__(self):
         return self.title
 
     # def get_absolute_url(self):
