@@ -1,6 +1,7 @@
 import random
 import os
 from django.db.models.signals import pre_save, post_save
+from django.urls import reverse
 from django.db import models
 from django.shortcuts import reverse
 from .utils import unique_slug_generator
@@ -84,7 +85,7 @@ class Boat(models.Model):
     objects = BoatManager()
 
     def get_absolute_url(self):
-        return "/boats/{slug}/".format(slug=self.slug)
+        return reverse("boats:detail", kwargs={"slug": self.slug})
 
     def __str__(self):
         return self.title
