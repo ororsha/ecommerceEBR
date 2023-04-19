@@ -20,12 +20,12 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('', views.home_page),
-    path('about/', views.about_page),
-    path('contact/', views.contact_page),
-    path('login/', views.login_page),
-    path('register/', views.register_page),
-    path('boats/', include("boats.urls")),
+    path('', views.home_page, name='home'),
+    path('about/', views.about_page, name='about'),
+    path('contact/', views.contact_page, name='contact'),
+    path('login/', views.login_page, name='login'),
+    path('register/', views.register_page, name='register'),
+    path('boats/', include(("boats.urls", "boats"), namespace="boats")),
     path('admin/', admin.site.urls),
 ]
 
