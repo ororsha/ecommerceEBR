@@ -5,14 +5,36 @@ from .models import Boat
 
 # Create your views here.
 
+
+class BoatActiveListView(ListView):
+    template_name = "boats/list.html"
+
+    def get_queryset(self, **kwargs):
+        request = self.request
+        return Boat.objects.all().active()
+
+
+class BoatActiveDetailView(DetailView):
+    queryset = Boat.objects.all().active()
+    template_name = "boats/active-detail.html"
+
+    # def get_queryset(self, *args, **kwargs):
+    #     request = self.request
+    #     return Product.objects.featured()
+
+
 class BoatListView(ListView):
     queryset = Boat.objects.all()
     template_name = "boats/list.html"
 
-    def get_context_data(self, **kwargs):
-        context = super(BoatListView, self).get_context_data(**kwargs)
-        print(context)
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super(BoatListView, self).get_context_data(**kwargs)
+    #     print(context)
+    #     return context
+
+    def get_queryset(self, **kwargs):
+        request = self.request
+        return Boat.objects.all()
 
 
 def boat_list_view(request):
@@ -21,6 +43,26 @@ def boat_list_view(request):
         'object_list': queryset
     }
     return render(request, "boats/list.html", context)
+
+
+class BoatDetailSlugView(DetailView):
+    queryset = Boat.objects.all()
+    template_name = "boats/detail.html"
+
+    def get_object(self, **kwargs):
+        request = self.request
+        slug = self.kwargs.get('slug')
+        #instance = get_object_or_404(Product, slug=slug, active=True)
+        try:
+            instance = Boat.objects.get(slug=slug, active=True)
+        except Boat.DoesNotExist:
+            raise Http404("Not found..")
+        except Boat.MultipleObjectsReturned:
+            qs = Boat.objects.filter(slug=slug, active=True)
+            instance = qs.first()
+        except:
+            raise Http404("Uhhmmm ")
+        return instance
 
 
 class BoatDetailView(DetailView):
@@ -41,13 +83,14 @@ class BoatDetailView(DetailView):
         return instance
 
 
-def Boat_detail_view(request, pk=None, **kwargs):
+def boat_detail_view(request, pk=None, **kwargs):
     #instance = Product.objects.get(pk=pk) #id
     # instance = get_object_or_404(Boat, pk=pk)
     # print(instance)
     instance = Boat.objects.get_by_id(pk)
     if instance is None:
         raise Http404("Product doesn't exist")
+
     context = {
         'object': instance
     }
