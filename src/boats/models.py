@@ -77,6 +77,7 @@ class Boat(models.Model):
     active = models.BooleanField(default=False)
     slug = models.SlugField(default="", null=False)
     description = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
     image_1 = models.ImageField(upload_to=upload_image_path, blank=True, null=True)
     image_2 = models.ImageField(upload_to=upload_image_path, blank=True, null=True)
     image_3 = models.ImageField(upload_to=upload_image_path, blank=True, null=True)
