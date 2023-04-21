@@ -1,6 +1,7 @@
 from django.views.generic import ListView, DetailView
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
+from carts.models import Cart
 from .models import Boat
 
 # Create your views here.
@@ -48,6 +49,12 @@ def boat_list_view(request):
 class BoatDetailSlugView(DetailView):
     queryset = Boat.objects.all()
     template_name = "boats/detail.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(BoatDetailSlugView, self).get_context_data(**kwargs)
+        cart_obj, new_obj = Cart.objects.new_or_get(self.request)
+        context['cart'] = cart_obj
+        return context
 
     def get_object(self, **kwargs):
         request = self.request
