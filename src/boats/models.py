@@ -1,4 +1,5 @@
 import random
+from django.db.models import Q
 import os
 from django.db.models.signals import pre_save, post_save
 from django.urls import reverse
@@ -16,9 +17,9 @@ LOCATIONS_CHOICES = (
 )
 
 LABEL_CHOICES = (
-    ('M', 'Motor yacht'),
-    ('S', 'Sailboat'),
-    ('T', 'Tender Boat')
+    ('Motor yacht', 'Motor yacht'),
+    ('Sailboat', 'Sailboat'),
+    ('Tender Boat', 'Tender Boat')
 )
 
 
@@ -45,6 +46,12 @@ class BoatQuerySet(models.query.QuerySet):
     # def featured(self):
     #     return self.filter(featured=True, active=True)
 
+    def search(self, query):
+        lookups = (Q(title__icontains=query) |
+                  Q(description__icontains=query) |
+                  Q(boat_category__icontains=query))
+        return self.filter(lookups).distinct()
+
 
 class BoatManager(models.Manager):
     def get_queryset(self):
@@ -62,13 +69,16 @@ class BoatManager(models.Manager):
             return qs.first()
         return None
 
+    def search(self, query):
+        return self.get_queryset().active().search(query)
+
 
 class Boat(models.Model):
     title = models.CharField(max_length=100)
     price_per_hour = models.DecimalField(decimal_places=2, max_digits=20, default=100.00)
     discount_price = models.DecimalField(decimal_places=2, max_digits=20, default=0)
     marine_location = models.CharField(choices=LOCATIONS_CHOICES, max_length=2)
-    boat_category = models.CharField(choices=LABEL_CHOICES, max_length=1)
+    boat_category = models.CharField(choices=LABEL_CHOICES, max_length=100)
     builder = models.CharField(max_length=100)
     year = models.DecimalField(decimal_places=0, max_digits=4)
     length = models.DecimalField(decimal_places=2, max_digits=5)
