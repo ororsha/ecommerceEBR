@@ -26,6 +26,7 @@ urlpatterns = [
     path('login/', views.login_page, name='login'),
     path('register/', views.register_page, name='register'),
     path('boats/', include(("boats.urls", "boats"), namespace="boats")),
+    path('search/', include(("search.urls", "search"), namespace="search")),
     path('admin/', admin.site.urls),
 ]
 
