@@ -1,1 +1,1 @@
-from django.urls import pathfrom .views import (        SearchBoatView     )urlpatterns = [    path('', SearchBoatView.as_view(), name='query'),]
+from django.urls import pathfrom .views import (        SearchBoatView,        SearchMarinView     )urlpatterns = [    path('', SearchBoatView.as_view(), name='query'),    path('', SearchMarinView.as_view(), name='query'),]

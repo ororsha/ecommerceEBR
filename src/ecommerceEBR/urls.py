@@ -28,6 +28,7 @@ urlpatterns = [
     path('cart/', include(("carts.urls", "carts"), namespace="cart")),
     path('register/', views.register_page, name='register'),
     path('boats/', include(("boats.urls", "boats"), namespace="boats")),
+    path('marins/', include(("marins.urls", "marins"), namespace="marins")),
     path('search/', include(("search.urls", "search"), namespace="search")),
     path('admin/', admin.site.urls),
 ]
