@@ -1,22 +1,23 @@
 from django.views.generic import ListView, DetailView
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
+from carts.models import Cart
 from .models import Boat
 
 # Create your views here.
 
 
-class BoatActiveListView(ListView):
-    template_name = "boats/list.html"
-
-    def get_queryset(self, **kwargs):
-        request = self.request
-        return Boat.objects.all().active()
-
-
-class BoatActiveDetailView(DetailView):
-    queryset = Boat.objects.all().active()
-    template_name = "boats/active-detail.html"
+# class BoatActiveListView(ListView):
+#     template_name = "boats/list.html"
+#
+#     def get_queryset(self, **kwargs):
+#         request = self.request
+#         return Boat.objects.all().active()
+#
+#
+# class BoatActiveDetailView(DetailView):
+#     queryset = Boat.objects.all().active()
+#     template_name = "boats/active-detail.html"
 
     # def get_queryset(self, *args, **kwargs):
     #     request = self.request
@@ -26,11 +27,6 @@ class BoatActiveDetailView(DetailView):
 class BoatListView(ListView):
     queryset = Boat.objects.all()
     template_name = "boats/list.html"
-
-    # def get_context_data(self, **kwargs):
-    #     context = super(BoatListView, self).get_context_data(**kwargs)
-    #     print(context)
-    #     return context
 
     def get_queryset(self, **kwargs):
         request = self.request
@@ -49,6 +45,12 @@ class BoatDetailSlugView(DetailView):
     queryset = Boat.objects.all()
     template_name = "boats/detail.html"
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(BoatDetailSlugView, self).get_context_data(**kwargs)
+        cart_obj, new_obj = Cart.objects.new_or_get(self.request)
+        context['cart'] = cart_obj
+        return context
+
     def get_object(self, **kwargs):
         request = self.request
         slug = self.kwargs.get('slug')
@@ -65,22 +67,22 @@ class BoatDetailSlugView(DetailView):
         return instance
 
 
-class BoatDetailView(DetailView):
-    # queryset = Boat.objects.all()
-    template_name = "boats/detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(BoatDetailView, self).get_context_data(**kwargs)
-        print(context)
-        return context
-
-    def get_object(self, **kwargs):
-        request = self.request
-        pk = self.kwargs.get('pk')
-        instance = Boat.objects.get_by_id(pk)
-        if instance is None:
-            raise Http404("Product doesn't exist")
-        return instance
+# class BoatDetailView(DetailView):
+#     # queryset = Boat.objects.all()
+#     template_name = "boats/detail.html"
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(BoatDetailView, self).get_context_data(**kwargs)
+#         print(context)
+#         return context
+#
+#     def get_object(self, **kwargs):
+#         request = self.request
+#         pk = self.kwargs.get('pk')
+#         instance = Boat.objects.get_by_id(pk)
+#         if instance is None:
+#             raise Http404("Product doesn't exist")
+#         return instance
 
 
 def boat_detail_view(request, pk=None, **kwargs):
