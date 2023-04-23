@@ -1,0 +1,1 @@
+from django.urls import pathfrom .views import (MarinListView,                    MarinDetailSlugView)urlpatterns = [    path('', MarinListView.as_view(), name='list'),    path('<slug:slug>/', MarinDetailSlugView.as_view(), name='detail'),]
