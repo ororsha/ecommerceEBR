@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save, post_save, m2m_changed
-
-
 from boats.models import Boat
 
 
@@ -30,16 +28,19 @@ class CartManager(models.Manager):
         if user is not None:
             if user.is_authenticated:
                 user_obj = user
-        return self.model.objects.create(user=user_obj)
+        return self.model.objects.create(user=user_obj, test=12)
 
 
 class Cart(models.Model):
-    user        = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,)
-    boats       = models.ManyToManyField(Boat, blank=True)
-    subtotal    = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
-    total       = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
-    updated     = models.DateTimeField(auto_now=True)
-    timestamp   = models.DateTimeField(auto_now_add=True)
+    user         = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,)
+    boats        = models.ManyToManyField(Boat, blank=True)
+    subtotal     = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
+    total        = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
+    updated      = models.DateTimeField(auto_now=True)
+    timestamp    = models.DateTimeField(auto_now_add=True)
+    invited_date = models.DateTimeField(null=True, blank=True)
+    return_date  = models.DateTimeField(null=True, blank=True)
+    test         = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
 
     objects = CartManager()
 
