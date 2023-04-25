@@ -84,7 +84,7 @@ class Marin(models.Model):
         return reverse("marins:detail", kwargs={"slug": self.slug})
 
     def __str__(self):
-        return self.title
+        return f"id: {self.pk}, name: {self.name}, location: {self.location}"
 
     def __unicode__(self):
         return self.title

@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'boats',
     'search',
     'carts',
-    'marins'
+    'marins',
+    'booking'
 ]
 
 MIDDLEWARE = [
