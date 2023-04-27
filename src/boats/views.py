@@ -66,6 +66,10 @@ class BoatDetailSlugView(DetailView):
             raise Http404("Uhhmmm ")
         return instance
 
+    def add_to_cart(self, request, slug):
+
+        if request.POST:
+            print("POST")
 
 # class BoatDetailView(DetailView):
 #     # queryset = Boat.objects.all()

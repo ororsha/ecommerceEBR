@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save, post_save, m2m_changed
-
-
 from boats.models import Boat
+from booking.models import Booking
+from django.utils import timezone
+import pytz
 
+utc=pytz.UTC
 
 User = settings.AUTH_USER_MODEL
 
@@ -34,12 +36,12 @@ class CartManager(models.Manager):
 
 
 class Cart(models.Model):
-    user        = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,)
-    boats       = models.ManyToManyField(Boat, blank=True)
-    subtotal    = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
-    total       = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
-    updated     = models.DateTimeField(auto_now=True)
-    timestamp   = models.DateTimeField(auto_now_add=True)
+    user         = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    booking      = models.ManyToManyField(Booking, null=True, blank=True)
+    subtotal     = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
+    total        = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
+    updated      = models.DateTimeField(auto_now=True)
+    timestamp    = models.DateTimeField(auto_now_add=True)
 
     objects = CartManager()
 
@@ -49,16 +51,16 @@ class Cart(models.Model):
 
 def m2m_changed_cart_receiver(sender, instance, action, **kwargs):
     if action == 'post_add' or action == 'post_remove' or action == 'post_clear':
-        boats = instance.boats.all()
+        booking = instance.booking.all()
         total = 0
-        for x in boats:
-            total += x.price_per_hour
+        for x in booking:
+            total += x.price
         if instance.subtotal != total:
             instance.subtotal = total
             instance.save()
 
 
-m2m_changed.connect(m2m_changed_cart_receiver, sender=Cart.boats.through)
+m2m_changed.connect(m2m_changed_cart_receiver, sender=Cart.booking.through)
 
 
 def pre_save_cart_receiver(sender, instance, **kwargs):

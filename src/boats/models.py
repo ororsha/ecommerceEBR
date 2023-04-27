@@ -91,6 +91,9 @@ class Boat(models.Model):
 
     objects = BoatManager()
 
+    def get_price_per_hour(self):
+        return self.price_per_hour
+
     def get_absolute_url(self):
         return reverse("boats:detail", kwargs={"slug": self.slug})
 
