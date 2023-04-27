@@ -16,17 +16,20 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 from carts.views import cart_home
+from accounts.views import login_page, register_page
 from . import views
 
 urlpatterns = [
     path('', views.home_page, name='home'),
     path('about/', views.about_page, name='about'),
     path('contact/', views.contact_page, name='contact'),
-    path('login/', views.login_page, name='login'),
+    path('login/', login_page, name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('cart/', include(("carts.urls", "carts"), namespace="cart")),
-    path('register/', views.register_page, name='register'),
+    path('register/', register_page, name='register'),
     path('boats/', include(("boats.urls", "boats"), namespace="boats")),
     path('marins/', include(("marins.urls", "marins"), namespace="marins")),
     path('search/', include(("search.urls", "search"), namespace="search")),
