@@ -9,8 +9,10 @@ from django.http import Http404
 from django.utils import timezone
 import pytz
 
+
 def cart_home(request):
     cart_obj, new_obj = Cart.objects.new_or_get(request)
+    print(cart_obj)
     return render(request, "carts/home.html", {"cart": cart_obj})
 
 
@@ -18,23 +20,21 @@ def cart_update(request):
     user =  request.POST.get('user_name')
     boat_id = request.POST.get('boat_id')
 
-    if request.method == 'POST':
-        request.session['invited_date'] = request.POST.get('invited_date')
-        request.session['return_date'] = request.POST.get('return_date')
-
     if boat_id is not None:
         try:
-            boat_obj = Boat.objects.get(id=boat_id)
+            boat_obj    = Boat.objects.get(id=boat_id)
+            booking_obj = add_booking(request, boat_obj)
         except Boat.DoesNotExist:
             print("Show message to user, product is gone?")
             return redirect("cart:home")
         cart_obj, new_obj = Cart.objects.new_or_get(request)
-        if boat_obj in cart_obj.boats.all():
-            cart_obj.boats.remove(boat_obj)
+        if booking_obj in cart_obj.booking.all():
+            cart_obj.booking.remove(booking_obj) # remove from cart
+            booking_obj.delete() # delete from booking
         else:
-            cart_obj.boats.add(boat_obj) # cart_obj.products.add(product_id)
-            add_booking(request, boat_obj)
-            request.session['cart_items'] = cart_obj.boats.count()
+            cart_obj.booking.add(booking_obj) # cart_obj.booking.add(product_id)
+            print(cart_obj.booking)
+            request.session['cart_items'] = cart_obj.booking.count()
         # return redirect(product_obj.get_absolute_url())
     return redirect("cart:home")
 
@@ -61,14 +61,16 @@ def add_booking(request, item):
 
         if avilable_date:
             hours = return_date - start_date
-            multiplication_hours(str(hours), item.get_price_per_hour())
-            booking = Booking.objects.get_or_create(
+            total_price = multiplication_hours(str(hours), item.get_price_per_hour())
+            booking, created = Booking.objects.get_or_create(
                 boat=item,
                 user=request.user,
                 ordered=False,
                 invited_date=start_date,
-                return_date=return_date
+                return_date=return_date,
+                price=total_price
             )
+            return booking
         else:
             raise Http404("already taken try another date")
 
@@ -89,4 +91,6 @@ def multiplication_hours(hours, price):
     # Calculate the total earned
     total_earned = hourly_rate * decimal.Decimal(num_hours)
 
-    print(f"Total earned: ${total_earned}")
+    print(f"Total cost: ${total_earned}")
+
+    return total_earned
