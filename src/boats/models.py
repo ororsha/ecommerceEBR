@@ -5,7 +5,7 @@ from django.db.models.signals import pre_save, post_save
 from django.urls import reverse
 from django.db import models
 from django.shortcuts import reverse
-from .utils import unique_slug_generator
+from ecommerceEBR.utils import unique_slug_generator
 from marins.models import Marin
 
 
@@ -81,7 +81,7 @@ class Boat(models.Model):
     max_guests      = models.DecimalField(decimal_places=0, max_digits=3)
     max_speed       = models.DecimalField(decimal_places=2, max_digits=4)
     active          = models.BooleanField(default=False)
-    slug            = models.SlugField(default="", null=False)
+    slug            = models.SlugField(blank=True, unique=True)
     description     = models.TextField()
     timestamp       = models.DateTimeField(auto_now_add=True)
     image_1         = models.ImageField(upload_to=upload_image_path, blank=True, null=True)
