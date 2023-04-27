@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% load mathfilters %}{% block content %}<h1>Checkout</h1><p>Cart Total: {{ object.cart.total }}</p><p>Taxes: {{ object.total|sub:object.cart.total }}</p><p>Order Total: {{ object.total }}</p>{% endblock %}
