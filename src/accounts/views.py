@@ -3,6 +3,7 @@ from django.views.generic import CreateView, FormView
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.utils.http import url_has_allowed_host_and_scheme
+from .signals import user_logged_in
 
 from .forms import LoginForm, RegisterForm
 
@@ -22,6 +23,7 @@ class LoginView(FormView):
         user = authenticate(request, username=email, password=password)
         if user is not None:
             login(request, user)
+            user_logged_in.send(user.__class__, instance=user, request=request)
             if url_has_allowed_host_and_scheme(redirect_path, request.get_host()):
                 return redirect(redirect_path)
             else:
