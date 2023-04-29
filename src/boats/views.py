@@ -1,6 +1,7 @@
 from django.views.generic import ListView, DetailView
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
+from analytics.mixins import ObjectViewedMixin
 from carts.models import Cart
 from .models import Boat
 
@@ -41,7 +42,7 @@ def boat_list_view(request):
     return render(request, "boats/list.html", context)
 
 
-class BoatDetailSlugView(DetailView):
+class BoatDetailSlugView(ObjectViewedMixin, DetailView):
     queryset = Boat.objects.all()
     template_name = "boats/detail.html"
 
@@ -64,6 +65,25 @@ class BoatDetailSlugView(DetailView):
             instance = qs.first()
         except:
             raise Http404("Uhhmmm ")
+        return instance
+
+
+class BoatDetailView(ObjectViewedMixin, DetailView):
+    #queryset = Boat.objects.all()
+    template_name = "boats/detail.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(BoatDetailView, self).get_context_data(*args, **kwargs)
+        print(context)
+        # context['abc'] = 123
+        return context
+
+    def get_object(self, *args, **kwargs):
+        request = self.request
+        pk = self.kwargs.get('pk')
+        instance = Boat.objects.get_by_id(pk)
+        if instance is None:
+            raise Http404("Product doesn't exist")
         return instance
 
 
