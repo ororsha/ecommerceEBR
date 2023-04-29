@@ -1,6 +1,7 @@
 import decimal
-
 from django.shortcuts import render, redirect
+from accounts.forms import LoginForm
+from billing.models import BillingProfile
 from orders.models import Order
 from boats.models import Boat
 from booking.models import Booking
@@ -12,39 +13,46 @@ import pytz
 
 
 def cart_home(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
     cart_obj, new_obj = Cart.objects.new_or_get(request)
-    print(cart_obj)
+    # print(cart_obj)
     return render(request, "carts/home.html", {"cart": cart_obj})
 
 
 def cart_update(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
     user =  request.POST.get('user_name')
     boat_id = request.POST.get('boat_id')
+    booked_id = request.POST.get('item_id')
+    print(booked_id)
+    print(boat_id)
+    cart_obj, new_obj = Cart.objects.new_or_get(request)
 
-    if boat_id is not None:
-        try:
-            boat_obj    = Boat.objects.get(id=boat_id)
-            booking_obj = add_booking(request, boat_obj)
-        except Boat.DoesNotExist:
+    if booked_id != "":
+        booking_obj = Booking.objects.get(id=booked_id)
+        cart_obj.booking.remove(booking_obj)  # remove from cart
+        booking_obj.delete()  # delete from booking
+    else:
+        if boat_id != "":
+            boat_obj = Boat.objects.get(id=boat_id)
+            booking_obj, created = add_booking(request, boat_obj)
+            cart_obj.booking.add(booking_obj)  # cart_obj.booking.add(product_id)
+            request.session['cart_items'] = cart_obj.booking.count()
+            print(request.session)
+        else:
             print("Show message to user, product is gone?")
             return redirect("cart:home")
-        cart_obj, new_obj = Cart.objects.new_or_get(request)
-        if booking_obj in cart_obj.booking.all():
-            cart_obj.booking.remove(booking_obj) # remove from cart
-            booking_obj.delete() # delete from booking
-        else:
-            cart_obj.booking.add(booking_obj) # cart_obj.booking.add(product_id)
-            print(cart_obj.booking)
-            request.session['cart_items'] = cart_obj.booking.count()
-        # return redirect(product_obj.get_absolute_url())
-    return redirect("cart:home")
 
+    # return redirect(product_obj.get_absolute_url())
+    return redirect("cart:home")
 
 def add_booking(request, item):
     vessel_book = Booking.objects.filter(boat=item)
-    start_date = request.session['invited_date']
+    start_date = request.POST['invited_date']
     start_date = datetime.strptime(start_date[0:19], "%Y-%m-%dT%H:%M")
-    return_date = request.session['return_date']
+    return_date = request.POST['return_date']
     return_date = datetime.strptime(return_date[0:19], "%Y-%m-%dT%H:%M")
     avilable_date = True
 
@@ -71,7 +79,7 @@ def add_booking(request, item):
                 return_date=return_date,
                 price=total_price
             )
-            return booking
+            return booking, created
         else:
             raise Http404("already taken try another date")
 
@@ -102,6 +110,17 @@ def checkout_home(request):
     order_obj = None
     if cart_created or cart_obj.booking.count() == 0:
         return redirect("cart:home")
-    else:
-        order_obj, new_order_obj = Order.objects.get_or_create(cart=cart_obj)
-    return render(request, "carts/checkout.html", {"object": order_obj})
+
+    login_form = LoginForm()
+
+    billing_profile, billing_profile_created = BillingProfile.objects.new_or_get(request)
+
+    if billing_profile is not None:
+        order_obj = Order.objects.create(billing_profile=billing_profile, cart=cart_obj)
+
+    context = {
+        "object": order_obj,
+        "billing_profile": billing_profile,
+        "login_form": login_form,
+    }
+    return render(request, "carts/checkout.html", context)
