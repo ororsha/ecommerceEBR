@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'mathfilters',
     'accounts',
+    'addresses',
     'billing',
     'tags',
     'boats',
