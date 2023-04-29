@@ -66,28 +66,6 @@ class BoatDetailSlugView(DetailView):
             raise Http404("Uhhmmm ")
         return instance
 
-    def add_to_cart(self, request, slug):
-
-        if request.POST:
-            print("POST")
-
-# class BoatDetailView(DetailView):
-#     # queryset = Boat.objects.all()
-#     template_name = "boats/detail.html"
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(BoatDetailView, self).get_context_data(**kwargs)
-#         print(context)
-#         return context
-#
-#     def get_object(self, **kwargs):
-#         request = self.request
-#         pk = self.kwargs.get('pk')
-#         instance = Boat.objects.get_by_id(pk)
-#         if instance is None:
-#             raise Http404("Product doesn't exist")
-#         return instance
-
 
 def boat_detail_view(request, pk=None, **kwargs):
     #instance = Product.objects.get(pk=pk) #id
