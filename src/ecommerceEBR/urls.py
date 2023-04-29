@@ -21,11 +21,14 @@ from django.urls import path, include
 from carts.views import cart_home
 from accounts.views import login_page, register_page
 from . import views
+from addresses.views import checkout_address_create_view, checkout_address_reuse_view
 
 urlpatterns = [
     path('', views.home_page, name='home'),
     path('about/', views.about_page, name='about'),
     path('contact/', views.contact_page, name='contact'),
+    path('checkout/address/create/', checkout_address_create_view, name='checkout_address_create'),
+    path('checkout/address/reuse/', checkout_address_reuse_view, name='checkout_address_reuse'),
     path('login/', login_page, name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('cart/', include(("carts.urls", "carts"), namespace="cart")),
