@@ -10,6 +10,7 @@ from booking.models import Booking
 from .models import Cart
 from datetime import datetime, timedelta
 from django.http import Http404
+from django.contrib import messages
 from django.utils import timezone
 import pytz
 
@@ -39,10 +40,28 @@ def cart_update(request):
     else:
         if boat_id != "":
             boat_obj = Boat.objects.get(id=boat_id)
-            booking_obj, created = add_booking(request, boat_obj)
-            cart_obj.booking.add(booking_obj)  # cart_obj.booking.add(product_id)
-            request.session['cart_items'] = cart_obj.booking.count()
-            print(request.session)
+            available_date, message = check_booking(request, boat_obj)
+
+            if available_date:
+                start_date, return_date = get_formatted_date(request)
+                hours = return_date - start_date
+                total_price = multiplication_hours(str(hours), boat_obj.get_price_per_hour())
+                booked, created = Booking.objects.get_or_create(
+                    boat=boat_obj,
+                    user=request.user,
+                    ordered=False,
+                    invited_date=start_date,
+                    return_date=return_date,
+                    price=total_price
+                )
+                cart_obj.booking.add(booked)  # cart_obj.booking.add(product_id)
+                request.session['cart_items'] = cart_obj.booking.count()
+                print(request.session)
+                messages.success(request, message)
+            else:
+                messages.info(request, message)
+                return redirect("cart:home")
+
         else:
             print("Show message to user, product is gone?")
             return redirect("cart:home")
@@ -50,13 +69,12 @@ def cart_update(request):
     # return redirect(product_obj.get_absolute_url())
     return redirect("cart:home")
 
-def add_booking(request, item):
+
+# Check if booking is available
+def check_booking(request, item):
     vessel_book = Booking.objects.filter(boat=item)
-    start_date = request.POST['invited_date']
-    start_date = datetime.strptime(start_date[0:19], "%Y-%m-%dT%H:%M")
-    return_date = request.POST['return_date']
-    return_date = datetime.strptime(return_date[0:19], "%Y-%m-%dT%H:%M")
-    avilable_date = True
+    start_date, return_date = get_formatted_date(request)
+    available_date = True
 
     # Check if date is valid
     min_rental_time = 3
@@ -64,29 +82,25 @@ def add_booking(request, item):
 
     # Check if minimum rental time is valid
     if min_range <= return_date:
-        print("OK more then 3 hours")
-
         for i in vessel_book:
-            if i.invited_date < pytz.utc.localize(start_date) < i.return_date:
-                avilable_date = False
+            if pytz.utc.localize(start_date) <= i.return_date and pytz.utc.localize(return_date) >= i.invited_date:
+                available_date = False
+                return available_date, "Already taken please choose another dates."
 
-        if avilable_date:
-            hours = return_date - start_date
-            total_price = multiplication_hours(str(hours), item.get_price_per_hour())
-            booking, created = Booking.objects.get_or_create(
-                boat=item,
-                user=request.user,
-                ordered=False,
-                invited_date=start_date,
-                return_date=return_date,
-                price=total_price
-            )
-            return booking, created
-        else:
-            raise Http404("already taken try another date")
-
+        if available_date:
+            return available_date, "Amazing you can now pay for your cruse inside the cart."
     else:
-        raise Http404("Less than 3 hours")
+        available_date = False
+        return available_date, "Less than 3 hours, try another date."
+
+
+def get_formatted_date(request):
+    start_date = request.POST['invited_date']
+    return_date = request.POST['return_date']
+    start_date_formatted = datetime.strptime(start_date[0:19], "%Y-%m-%dT%H:%M")
+    return_date_formatted = datetime.strptime(return_date[0:19], "%Y-%m-%dT%H:%M")
+
+    return start_date_formatted, return_date_formatted
 
 
 def multiplication_hours(hours, price):
