@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 from carts.views import cart_home
-from accounts.views import login_page, register_page
+from accounts.views import LoginView, RegisterView
 from . import views
 from addresses.views import checkout_address_create_view, checkout_address_reuse_view
 
@@ -29,10 +29,10 @@ urlpatterns = [
     path('contact/', views.contact_page, name='contact'),
     path('checkout/address/create/', checkout_address_create_view, name='checkout_address_create'),
     path('checkout/address/reuse/', checkout_address_reuse_view, name='checkout_address_reuse'),
-    path('login/', login_page, name='login'),
+    path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('cart/', include(("carts.urls", "carts"), namespace="cart")),
-    path('register/', register_page, name='register'),
+    path('register/', RegisterView.as_view(), name='register'),
     path('boats/', include(("boats.urls", "boats"), namespace="boats")),
     path('marins/', include(("marins.urls", "marins"), namespace="marins")),
     path('search/', include(("search.urls", "search"), namespace="search")),
