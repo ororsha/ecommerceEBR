@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
 
 import stripe
-STRIPE_SECRET_KEY = getattr(settings, "STRIPE_SECRET_KEY", "sk_test_51IZM9RIfI9UYOkDFDD1kcINyk5Dvm4O4PHKebKSfkxC8avfMK9Q1qcadymdw6w0UJSZO5EFHtuYpFO9QOMI3sVzw00m2vY0RjR")
-STRIPE_PUB_KEY =  getattr(settings, "STRIPE_PUB_KEY", 'pk_test_51IZM9RIfI9UYOkDF7FsVucjdcFkIh4DPqJmb5x7JWlmRM5xG8vChbfuH8FOZsEyH13avwdpGZqalCwORzuSxA3Qd0073zMYQRV')
+STRIPE_SECRET_KEY = getattr(settings, "STRIPE_SECRET_KEY")
+STRIPE_PUB_KEY =  getattr(settings, "STRIPE_PUB_KEY")
 stripe.api_key = STRIPE_SECRET_KEY
 
 
