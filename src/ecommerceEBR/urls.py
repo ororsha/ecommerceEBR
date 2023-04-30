@@ -17,6 +17,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
+from django.views.generic import TemplateView, RedirectView
 from django.urls import path, include
 from carts.views import cart_home
 from accounts.views import LoginView, RegisterView
@@ -27,6 +28,9 @@ from billing.views import payment_method_view, payment_method_createview
 urlpatterns = [
     path('', views.home_page, name='home'),
     path('about/', views.about_page, name='about'),
+    path('accounts/', RedirectView.as_view(url='/account')),
+    path('settings/', RedirectView.as_view(url='/account')),
+    path('account/', include(("accounts.urls", "accounts"), namespace="account")),
     path('contact/', views.contact_page, name='contact'),
     path('checkout/address/create/', checkout_address_create_view, name='checkout_address_create'),
     path('checkout/address/reuse/', checkout_address_reuse_view, name='checkout_address_reuse'),
