@@ -3,8 +3,8 @@
 /lib
 /src/db.sqlite3
 
-/src/ecommerceEBR/settings/local.py
-/src/ecommerceEBR/settings/production.py
+ecommerceEBR/settings/local.py
+ecommerceEBR/settings/production.py
 
 
 
