@@ -42,7 +42,7 @@ def boat_list_view(request):
     return render(request, "boats/list.html", context)
 
 
-class BoatDetailSlugView(ObjectViewedMixin, DetailView):
+class BoatDetailSlugView(DetailView):
     queryset = Boat.objects.all()
     template_name = "boats/detail.html"
 
@@ -68,7 +68,7 @@ class BoatDetailSlugView(ObjectViewedMixin, DetailView):
         return instance
 
 
-class BoatDetailView(ObjectViewedMixin, DetailView):
+class BoatDetailView(DetailView):
     #queryset = Boat.objects.all()
     template_name = "boats/detail.html"
 
