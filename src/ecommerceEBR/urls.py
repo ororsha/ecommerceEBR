@@ -28,9 +28,10 @@ from billing.views import payment_method_view, payment_method_createview
 urlpatterns = [
     path('', views.home_page, name='home'),
     path('about/', views.about_page, name='about'),
-    path('accounts/', RedirectView.as_view(url='/account')),
     path('settings/', RedirectView.as_view(url='/account')),
+    path('accounts/', RedirectView.as_view(url='/account')),
     path('account/', include(("accounts.urls", "accounts"), namespace="account")),
+    path('accounts/', include("accounts.passwords.urls")),
     path('contact/', views.contact_page, name='contact'),
     path('checkout/address/create/', checkout_address_create_view, name='checkout_address_create'),
     path('checkout/address/reuse/', checkout_address_reuse_view, name='checkout_address_reuse'),
