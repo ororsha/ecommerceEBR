@@ -41,6 +41,7 @@ urlpatterns = [
     path('billing/payment_method/', payment_method_view, name='billing-payment-method'),
     path('billing/payment-method/create/', payment_method_createview, name='billing-payment-method-endpoint'),
     path('register/', RegisterView.as_view(), name='register'),
+    path('orders/', include(("orders.urls", "boats"), namespace="orders")),
     path('boats/', include(("boats.urls", "boats"), namespace="boats")),
     path('marins/', include(("marins.urls", "marins"), namespace="marins")),
     path('search/', include(("search.urls", "search"), namespace="search")),
