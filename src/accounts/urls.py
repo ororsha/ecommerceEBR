@@ -1,1 +1,1 @@
-from django.urls import pathfrom .views import (        AccountHomeView,        )urlpatterns = [    path('', AccountHomeView.as_view(), name='home'),]
+from django.urls import pathfrom .views import (        AccountHomeView,        AccountEmailActivateView,        )urlpatterns = [    path('', AccountHomeView.as_view(), name='home'),    path('email/confirm/<str:key>/', AccountEmailActivateView.as_view(), name='email-activate'),]
