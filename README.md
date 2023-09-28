@@ -63,5 +63,7 @@ You can install them via pip as mentioned in the installation steps.
 Feel free to contribute to this project by opening issues or pull requests.
 
 
-**ERD:**
-<img width="1440" alt="erd" src="https://github.com/ororsha/ecommerceEBR/assets/31905358/7577bbd5-d355-404e-890a-ddfb619ee2ff">
+_________
+
+E N J O Y
+_________
